@@ -8,6 +8,12 @@ namespace ILCompiler.DependencyAnalysis
 {
     public class ExternSymbolsImportedNodeProvider : ImportedNodeProvider
     {
+        private readonly TypeSystemContext _context;
+        public ExternSymbolsImportedNodeProvider(TypeSystemContext context)
+        {
+            _context = context;
+        }
+
         public override IEETypeNode ImportedEETypeNode(NodeFactory factory, TypeDesc type)
         {
             return new ExternEETypeSymbolNode(factory, type);
@@ -15,12 +21,20 @@ namespace ILCompiler.DependencyAnalysis
 
         public override ISortableSymbolNode ImportedGCStaticNode(NodeFactory factory, MetadataType type)
         {
-            return new ExternDataSymbolNode(GCStaticsNode.GetMangledName(type, factory.NameMangler));
+            return new ExternDataSymbolNode(GCStaticsNode.GetMangledName(type, factory.NameMangler), true);
         }
 
         public override ISortableSymbolNode ImportedNonGCStaticNode(NodeFactory factory, MetadataType type)
         {
-            return new ExternDataSymbolNode(NonGCStaticsNode.GetMangledName(type, factory.NameMangler));
+            string importPrefix = string.Empty;
+            if (_context.Target.IsWindows)
+            {
+                // On Windows, we need to explicitly refer to the exported data. We also need to explicitly mark the
+                // export as a DATA export, and in those cases you have to directly refer to the linked symbol, because
+                // the linker does not generate a thunk.
+                importPrefix = "__imp_";
+            }
+            return new ExternDataSymbolNode(importPrefix + NonGCStaticsNode.GetMangledName(type, factory.NameMangler), true);
         }
 
         public override ISortableSymbolNode ImportedMethodDictionaryNode(NodeFactory factory, MethodDesc method)

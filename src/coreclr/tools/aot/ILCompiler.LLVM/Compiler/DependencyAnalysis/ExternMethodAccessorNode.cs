@@ -89,7 +89,7 @@ namespace ILCompiler.DependencyAnalysis
 
         public override void AppendMangledName(NameMangler nameMangler, Utf8StringBuilder sb)
         {
-            sb.Append("get.");
+            sb.Append("get__");
             sb.Append(ExternMethodName);
         }
 

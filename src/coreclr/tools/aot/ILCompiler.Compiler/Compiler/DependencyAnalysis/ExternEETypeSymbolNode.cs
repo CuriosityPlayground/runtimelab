@@ -18,7 +18,7 @@ namespace ILCompiler.DependencyAnalysis
             : base(
                 // On Windows, we need to actually refer to the import symbol so the linker
                 // does not generate a thunk, which would break data imports.
-                (OperatingSystem.IsWindows() ? "__imp_" : "") +
+                (factory.Target.IsWindows ? "__imp_" : "") +
                 factory.NameMangler.NodeMangler.MethodTable(type),
                 // this is an extern import, so we have to treat it as redirected
                 true

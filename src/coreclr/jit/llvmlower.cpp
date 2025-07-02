@@ -837,31 +837,7 @@ void Llvm::lowerUnmanagedCall(GenTreeCall* callNode)
     {
         // We cannot easily handle varargs as we do not know which args are the fixed ones.
         assert((callNode->gtCallType == CT_USER_FUNC) && !callNode->IsVarargs());
-
-        ArrayStack<TargetAbiType> sig(_compiler->getAllocator(CMK_Codegen));
-        sig.Push(getAbiTypeForType(JITtype2varType(callNode->gtCorInfoType)));
-        for (CallArg& arg : callNode->gtArgs.Args())
-        {
-            sig.Push(getAbiTypeForType(JITtype2varType(getLlvmArgTypeForCallArg(&arg))));
-        }
-
-        // WASM requires the callee and caller signature to match. At the LLVM level, "callee type" is the function
-        // type attached of the called operand and "caller" - that of its callsite. The problem, then, is that for a
-        // given module, we can only have one function declaration, thus, one callee type. And we cannot know whether
-        // this type will be the right one until, in general, runtime (this is the case for WASM imports provided by
-        // the host environment). Thus, to achieve the experience of runtime erros on signature mismatches, we "hide"
-        // the target behind an external function from another module, turning this call into an indirect one.
-        GenTreeCall* getTargetCall =
-            _compiler->gtNewHelperCallNode(CORINFO_HELP_LLVM_GET_EXTERNAL_CALL_TARGET, TYP_I_IMPL);
-        getTargetCall->gtEntryPoint.handle =
-            GetExternalMethodAccessor(callNode->gtCallMethHnd, &sig.BottomRef(), sig.Height());
-        getTargetCall->gtEntryPoint.accessType = IAT_VALUE;
-
-        callNode->gtCallType = CT_INDIRECT;
-        callNode->gtCallAddr = getTargetCall;
-        callNode->gtCallCookie = nullptr;
-        CurrentRange().InsertBefore(callNode, getTargetCall);
-        lowerNode(getTargetCall);
+        GetExternalMethodAddress(callNode->gtCallMethHnd, &callNode->gtEntryPoint);
     }
 }
 

@@ -162,13 +162,13 @@ namespace Internal.JitInterface
         }
 
         [UnmanagedCallersOnly]
-        public static IntPtr getExternalMethodAccessor(IntPtr thisHandle, CORINFO_METHOD_STRUCT_* methodHandle, TargetAbiType* sig, int sigLength)
+        public static void getExternalMethodAddress(
+            IntPtr thisHandle, CORINFO_METHOD_STRUCT_* methodHandle, CORINFO_CONST_LOOKUP* pLookup)
         {
             CorInfoImpl _this = GetThis(thisHandle);
             MethodDesc method = _this.HandleToObject(methodHandle);
-            ISymbolNode accessorNode = _this._compilation.GetExternalMethodAccessor(method, new ReadOnlySpan<TargetAbiType>(sig, sigLength));
-
-            return _this.ObjectToHandle(accessorNode);
+            ISymbolNode cellNode = _this._compilation.GetExternalMethodCell(method);
+            *pLookup = _this.CreateConstLookupToSymbol(cellNode);
         }
 
         [UnmanagedCallersOnly]
@@ -436,7 +436,7 @@ namespace Internal.JitInterface
             jitImports[(int)EEApiId.EEAI_GetPrimitiveTypeForTrivialWasmStruct] = (delegate* unmanaged<IntPtr, CORINFO_CLASS_STRUCT_*, CorInfoType>)&getPrimitiveTypeForTrivialWasmStruct;
             jitImports[(int)EEApiId.EEAI_GetTypeDescriptor] = (delegate* unmanaged<IntPtr, CORINFO_CLASS_STRUCT_*, TypeDescriptor*, void>)&getTypeDescriptor;
             jitImports[(int)EEApiId.EEAI_GetAlternativeFunctionName] = (delegate* unmanaged<IntPtr, byte*>)&getAlternativeFunctionName;
-            jitImports[(int)EEApiId.EEAI_GetExternalMethodAccessor] = (delegate* unmanaged<IntPtr, CORINFO_METHOD_STRUCT_*, TargetAbiType*, int, IntPtr>)&getExternalMethodAccessor;
+            jitImports[(int)EEApiId.EEAI_GetExternalMethodAddress] = (delegate* unmanaged<IntPtr, CORINFO_METHOD_STRUCT_*, CORINFO_CONST_LOOKUP*, void>)&getExternalMethodAddress;
             jitImports[(int)EEApiId.EEAI_GetDebugInfoForCurrentMethod] = (delegate* unmanaged<IntPtr, CORINFO_LLVM_METHOD_DEBUG_INFO*, void>)&getDebugInfoForCurrentMethod;
             jitImports[(int)EEApiId.EEAI_GetSingleThreadedCompilationContext] = (delegate* unmanaged<IntPtr, void*>)&getSingleThreadedCompilationContext;
             jitImports[(int)EEApiId.EEAI_GetExceptionHandlingModel] = (delegate* unmanaged<IntPtr, CorInfoLlvmEHModel>)&getExceptionHandlingModel;
@@ -494,15 +494,6 @@ namespace Internal.JitInterface
         }
 
         private static void* GetJitExport(CorJitApiId id) => s_jitExports[(int)id];
-    }
-
-    public enum TargetAbiType : byte
-    {
-        Void,
-        Int32,
-        Int64,
-        Float,
-        Double
     }
 
     public enum CorInfoLlvmEHModel

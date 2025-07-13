@@ -735,7 +735,7 @@ namespace ILCompiler.ObjectWriter
                 case RelocType.R_WASM_FUNCTION_INDEX_LEB:
                     return R_WASM_FUNCTION_INDEX_LEB;
                 case RelocType.R_WASM_MEMORY_ADDR_SLEB:
-                    return R_WASM_MEMORY_ADDR_SLEB;
+                    return R_WASM_GLOBAL_INDEX_LEB;
                 case RelocType.R_WASM_TABLE_INDEX_SLEB:
                     return R_WASM_TABLE_INDEX_SLEB;
                 case RelocType.R_WASM_MEMORY_ADDR_SLEB64:

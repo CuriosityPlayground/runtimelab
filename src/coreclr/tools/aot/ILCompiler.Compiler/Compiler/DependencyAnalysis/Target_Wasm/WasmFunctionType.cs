@@ -27,7 +27,7 @@ namespace ILCompiler.DependencyAnalysis.Wasm
             return hash.ToHashCode();
         }
 
-        public static bool IsFunction(ISymbolNode symbol) => 
+        public static bool IsFunction(ISymbolNode symbol) =>
             (symbol is ExternSymbolNode esn && !esn.Utf8Name.ToString().Contains("NonGCStaticBase") && !esn.Utf8Name.ToString().Contains("MethodTable")) || symbol is IWasmFunctionNode or IMethodNode { Offset: 0 };
 
         public static bool Equals(WasmFunctionType type, WasmValueType result, ReadOnlySpan<WasmValueType> parameters) =>

@@ -28,7 +28,7 @@ namespace ILCompiler.ObjectWriter
             // runtime once https://github.com/llvm/llvm-project/issues/100733 is fixed.
             if (factory.Target.OperatingSystem == TargetOS.Browser)
             {
-                nodes = nodes.Append(new StackTraceIpCanaryNode());
+             //   nodes = nodes.Append(new StackTraceIpCanaryNode());
             }
 
             foreach (DependencyNode depNode in nodes)

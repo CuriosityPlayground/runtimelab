@@ -21,20 +21,12 @@ namespace ILCompiler.DependencyAnalysis
 
         public override ISortableSymbolNode ImportedGCStaticNode(NodeFactory factory, MetadataType type)
         {
-            return new ExternSymbolNode(GCStaticsNode.GetMangledName(type, factory.NameMangler), true);
+            return new ExternDataSymbolNode(GCStaticsNode.GetMangledName(type, factory.NameMangler));
         }
 
         public override ISortableSymbolNode ImportedNonGCStaticNode(NodeFactory factory, MetadataType type)
         {
-            string importPrefix = string.Empty;
-            if (_context.Target.IsWindows)
-            {
-                // On Windows, we need to explicitly refer to the exported data. We also need to explicitly mark the
-                // export as a DATA export, and in those cases you have to directly refer to the linked symbol, because
-                // the linker does not generate a thunk.
-                importPrefix = "__imp_";
-            }
-            return new ExternSymbolNode(importPrefix + NonGCStaticsNode.GetMangledName(type, factory.NameMangler), true);
+            return new ExternDataSymbolNode(NonGCStaticsNode.GetMangledName(type, factory.NameMangler));
         }
 
         public override ISortableSymbolNode ImportedMethodDictionaryNode(NodeFactory factory, MethodDesc method)

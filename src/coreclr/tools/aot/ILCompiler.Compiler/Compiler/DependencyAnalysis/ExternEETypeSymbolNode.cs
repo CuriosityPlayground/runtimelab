@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Internal.TypeSystem;
+using System;
 
 namespace ILCompiler.DependencyAnalysis
 {
@@ -14,7 +15,12 @@ namespace ILCompiler.DependencyAnalysis
         private TypeDesc _type;
 
         public ExternEETypeSymbolNode(NodeFactory factory, TypeDesc type)
-            : base(factory.NameMangler.NodeMangler.MethodTable(type))
+            : base(
+                // On Windows, we need to actually refer to the import symbol so the linker
+                // does not generate a thunk, which would break data imports.
+                (factory.Target.IsWindows ? "__imp_" : "") +
+                factory.NameMangler.NodeMangler.MethodTable(type)
+            )
         {
             _type = type;
 

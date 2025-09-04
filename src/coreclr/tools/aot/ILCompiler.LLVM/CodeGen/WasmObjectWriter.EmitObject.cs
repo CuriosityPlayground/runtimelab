@@ -28,7 +28,8 @@ namespace ILCompiler.ObjectWriter
             // runtime once https://github.com/llvm/llvm-project/issues/100733 is fixed.
             if (factory.Target.OperatingSystem == TargetOS.Browser)
             {
-                nodes = nodes.Append(new StackTraceIpCanaryNode());
+                // This will randomly cause the relocation section in the generated wasm to be invalid, so we disable it for now.
+                // nodes = nodes.Append(new StackTraceIpCanaryNode());
             }
 
             foreach (DependencyNode depNode in nodes)

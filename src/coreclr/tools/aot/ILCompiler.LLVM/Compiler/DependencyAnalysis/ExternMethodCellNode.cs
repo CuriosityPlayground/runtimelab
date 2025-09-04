@@ -129,7 +129,7 @@ namespace ILCompiler.DependencyAnalysis
 
         public void AppendMangledName(NameMangler nameMangler, Utf8StringBuilder sb)
         {
-            sb.Append("cell.");
+            sb.Append("cell_");
             sb.Append(ExternMethodName);
         }
 

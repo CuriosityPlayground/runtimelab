@@ -21,7 +21,9 @@ namespace ILCompiler.DependencyAnalysis
 
         public override ISortableSymbolNode ImportedGCStaticNode(NodeFactory factory, MetadataType type)
         {
-            return new ExternDataSymbolNode(GCStaticsNode.GetMangledName(type, factory.NameMangler), true);
+            if (_context.Target.OperatingSystem != TargetOS.Browser)
+                return new ExternDataSymbolNode(GCStaticsNode.GetMangledName(type, factory.NameMangler), true);
+            return new ExternDataSymbolNode(GCStaticsNode.GetMangledName(type, factory.NameMangler));
         }
 
         public override ISortableSymbolNode ImportedNonGCStaticNode(NodeFactory factory, MetadataType type)
@@ -34,7 +36,9 @@ namespace ILCompiler.DependencyAnalysis
                 // the linker does not generate a thunk.
                 importPrefix = "__imp_";
             }
-            return new ExternDataSymbolNode(importPrefix + NonGCStaticsNode.GetMangledName(type, factory.NameMangler), true);
+            if (_context.Target.OperatingSystem != TargetOS.Browser)
+                return new ExternDataSymbolNode(importPrefix + NonGCStaticsNode.GetMangledName(type, factory.NameMangler), true);
+            return new ExternDataSymbolNode(NonGCStaticsNode.GetMangledName(type, factory.NameMangler));
         }
 
         public override ISortableSymbolNode ImportedMethodDictionaryNode(NodeFactory factory, MethodDesc method)

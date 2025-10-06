@@ -243,7 +243,9 @@ namespace Internal.JitInterface
                 factory.Target.OperatingSystem == TargetOS.Browser)
             {
                 // EH info is prefixed by the (unbiased) stack trace IP.
-                builder.EmitReloc(_methodCodeNode, RelocType.R_WASM_FUNCTION_INDEX_I32);
+                // Curiosity/jonas: We disable this, as it causes bugs in wasm-ld: https://github.com/llvm/llvm-project/issues/162044
+                // This means we don't get proper stack traces, but we can live with that.
+                // builder.EmitReloc(_methodCodeNode, RelocType.R_WASM_FUNCTION_INDEX_I32);
             }
             symbolDefOffset = builder.CountBytes;
 

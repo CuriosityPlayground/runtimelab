@@ -75,7 +75,7 @@ namespace ILCompiler.DependencyAnalysis
     /// <summary>
     /// Represents a data symbol that is defined externally and statically linked to the output obj file.
     /// </summary>
-    public class ExternDataSymbolNode(Utf8String name) : ExternSymbolNode(name)
+    public class ExternDataSymbolNode(Utf8String name, bool isIndirection=false) : ExternSymbolNode(name, isIndirection)
     {
         public override int ClassCode => 1428609964;
 

@@ -462,6 +462,7 @@ namespace ILCompiler.ObjectWriter
         {
             const byte SYMTAB_FUNCTION = 0;
             const byte SYMTAB_DATA = 1;
+            const uint WASM_SYM_VISIBILITY_HIDDEN = 0x04;
             const uint WASM_SYM_UNDEFINED = 0x10;
             const uint WASM_SYM_NO_STRIP = 0x80;
             const uint WASM_SYM_EXPLICIT_NAME = 0x40;
@@ -481,6 +482,14 @@ namespace ILCompiler.ObjectWriter
                 bool isDefined = symbol.IsDefined;
                 bool isExplicitlyImported = symbol.GetImportModuleAndName(_compilation, out _, out _);
                 uint flags = 0;
+                // These symbols must not be visible - or the linker will share them with other modules,
+                // leading to wrong ones being picked up.
+                if (symbol.Name.ToString().Contains("ilc_output__ReadyToRunHeader")
+                    || symbol.Name.ToString().Contains("ilc_output__Module")
+                    || symbol.Name.ToString().Contains("ilc_output__module_initializers")
+                    || symbol.Name.ToString().Contains("ilc_output__FrozenSegmentStart")
+                    )
+                    flags |= WASM_SYM_VISIBILITY_HIDDEN;
                 if (!isDefined)
                 {
                     flags |= WASM_SYM_UNDEFINED;

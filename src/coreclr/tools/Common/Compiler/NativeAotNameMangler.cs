@@ -149,8 +149,8 @@ namespace ILCompiler
             }
         }
 
-        private const string EnterNameScopeSequence = "<";
-        private const string ExitNameScopeSequence = ">";
+        private const string EnterNameScopeSequence = "_";
+        private const string ExitNameScopeSequence = "_";
         private const string DelimitNameScopeSequence = ",";
 
         protected string NestMangledName(string name)

@@ -42,7 +42,7 @@ namespace ILCompiler.DependencyAnalysis
                   vtableSliceProvider,
                   dictionaryLayoutProvider,
                   inlinedThreadStatics,
-                  new ImportedNodeProviderThrowing(),
+                  new ExternSymbolsImportedNodeProvider(context),
                   preinitializationManager,
                   devirtualizationManager,
                   dataInterner)
